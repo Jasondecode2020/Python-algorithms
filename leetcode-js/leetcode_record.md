@@ -100,6 +100,34 @@ but by using helper function(expand from center) start from
 middle makes it fast, but still O(n^2), there is a Manacher's
 algorithm but too hard for an interview.
 
+### 6 6. Zigzag Conversion
+
+code: 
+
+```js
+var convert = function(s, numRows) {
+    if (numRows === 1 ||numRows >= s.length) return s; // no need to use bucket
+    // use bucket to get result
+    let bucket = new Array(numRows).fill().map(i => []);
+    let flip = -1; // as a plus minus flip
+    let count = 0; // count which bucket to put
+    for (let i = 0; i < s.length; i++) {
+        if (count === 0) flip = -flip;
+        bucket[count].push(s[i]);
+        count += flip;
+        if (count === numRows - 1) flip = -flip;
+    }
+    
+    for (let i = 0; i < bucket.length; i++) {
+        bucket[i] = bucket[i].join('');
+    }
+    return bucket.join('')
+};
+```
+
+time (minute): 5
+
+note: did many times, use bucket to store each row
 ### 7 7. Reverse Integer
 
 code: 
