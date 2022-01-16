@@ -157,6 +157,35 @@ time (minute): 5
 
 note: did many times, normal reverse number.
 
+### 8 8. String to Integer (atoi)
+
+code: 
+
+```js
+var myAtoi = function(s) {
+    let i = 0,
+        num = 0,
+        max = 2 ** 31 - 1,
+        min = 2 ** 31 * -1
+        sign = 1;
+    s = s.trim();
+    if (s[i] === '+' || s[i] === '-') {
+        sign = s[i] === '-' ? -1 : 1;
+        i++;
+    }
+    while (s[i] && s[i].charCodeAt(0) - 48 >= 0 && s[i].charCodeAt(0) - 48 <= 9) {
+        num = num * 10 + s[i].charCodeAt(0) - 48;
+        i++;
+    }
+    num *= sign;
+    return Math.max(Math.min(num, max), min)
+};
+```
+
+time (minute): 5
+
+note: did many times, did yesterday and today again.
+
 ### 9 9. Palindrome Number
 
 code: 
@@ -181,3 +210,167 @@ var isPalindrome = function(x) {
 time (minute): 5
 
 note: did many times, used leetcode 7 method
+
+### 11 11. Container With Most Water
+
+code: 
+
+```js
+var maxArea = function(height) {
+    let l = 0;
+    let r = height.length - 1;
+    let res = 0;
+    while (l < r) {
+        res = Math.max(res, (r - l) * Math.min(height[r], height[l]));
+        if (height[l] < height[r]) l++;
+        else r--;
+    }
+    return res;
+};
+```
+
+time (minute): 5
+
+note: did many times, used two pointers
+
+### 12 12. Integer to Roman
+
+code: 
+
+```js
+var intToRoman = function(num) {
+    const values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+    const romans = ["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"];
+    let res = "";
+    for (let i = 0; i < values.length; i++) {
+        let count = parseInt(num / values[i]);
+        while (count--) res += romans[i];
+        num %= values[i];
+    }  
+    return res;
+};
+```
+
+time (minute): 5
+
+note: did many times, similar to leetcode 7 method
+
+### 13 13. Roman to Integer
+
+code: 
+
+```js
+var romanToInt = function(s) {
+    const map = {
+        'I': 1,           
+        'V': 5,
+        'X': 10,
+        'L': 50,
+        'C': 100,
+        'D': 500,
+        'M': 1000
+    }
+    let res = 0;
+    let prev = map['M'];
+    for (const c of s) {
+        res += map[c];
+        if (map[c] > prev) res -= 2 * prev;
+        prev = map[c];
+    }
+    return res
+};
+```
+
+time (minute): 5
+
+note: did many times, used two pointers
+
+### 14 14. Longest Common Prefix
+
+code: 
+
+```js
+var longestCommonPrefix = function(strs) {
+    let prefix = '';
+    for (let i = 1; i <= strs[0].length; i++) {
+        const nextPrefix = strs[0].slice(0, i);
+        if (strs.every(str => str.slice(0, i) === nextPrefix)) {
+            prefix = nextPrefix;
+        } else {
+            break;
+        }
+    }
+    
+    return prefix;
+};
+```
+
+time (minute): 5
+
+note: did many times, every is better
+
+### 15 15. 3Sum
+
+code: 
+
+```js
+var threeSum = function(nums) {
+    nums.sort((a, b) => a - b);
+    const res = [];
+    for (let i = 0; i < nums.length; i++) {
+        if (i > 0 && nums[i] === nums[i - 1]) continue;
+        if (nums[i] > 0) break;
+        let l = i + 1;
+        let r = nums.length - 1
+        while (l < r) {
+            const sum = nums[i] + nums[l] + nums[r];
+            if (sum === 0) {
+                res.push([nums[i], nums[l], nums[r]])
+                l++;
+                r--;
+                while (l < r) {
+                    if (nums[l] === nums[l - 1]) l++;
+                    else if (nums[r] === nums[r + 1]) r--;
+                    else break;
+                }
+            } else if (sum > 0) {
+                r--;
+            } else {
+                l++;
+            }
+        }
+    }
+    return res;
+};
+```
+
+time (minute): 5
+
+note: did many times, two pointers
+
+### 849. Maximize Distance to Closest Person
+
+```js
+var maxDistToClosest = function(seats) {
+    const closest = (i, j) => {
+        while (i >= 0 && j < seats.length) {
+            if (seats[i] === 0) i--;
+            if (seats[j] === 0) j++;
+            if (seats[i] === 1 && seats[j] === 1) return (j - i) >> 1; // 1 000 1
+        }
+        return j - i - 1; // 10000 || 00001
+    }
+    
+    let res = 0;
+    for (let i = 0; i < seats.length; i++) {
+        if (seats[i] === 0) {
+            const test = closest(i, i);
+            if (test > res) res = test;
+        }
+    }
+    return res;
+};
+```
+time (minute): 5
+
+note: did many times, two pointers
