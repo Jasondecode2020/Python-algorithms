@@ -1,5 +1,13 @@
-function fn() {
-    console.log(this);
+const dp = [1, 2, 3]
+const f = (dp) => {
+    for (let i = 0; i < dp.length; i++) {
+        if (i === 0) {
+            dp[i] = 2;
+            return dp[i];
+        }
+    }
 }
 
-fn.call("xx");
+
+const a = f(dp);
+console.log(a);
