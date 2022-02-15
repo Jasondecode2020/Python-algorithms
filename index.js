@@ -147,3 +147,85 @@
   
 //   console.log(combined);
   
+
+// string
+
+// 1 padEnd, padStart
+
+// const s = 'aaa';
+// const padEndS = s.padEnd(5, 'x');
+// const padStarts = s.padStart(5, 'x');
+// console.log(s, padEndS, padStarts);
+
+// 2 repeat
+
+// const A = "for";
+// const a = A.repeat(5);
+// console.log(a);
+
+// 3 charAt, and charCodeAt
+
+// var str = 'JavaScript is object oriented language';
+  
+// // Finding the character at given index 
+// var value = str.charAt(0); 
+// var value1 = str.charAt(4);
+// var value2 = str.charCodeAt(1);
+// console.log(value, value1, value2);
+
+// 4 concat
+// var str = 'Geeks'; 
+  
+// // Joining the strings together 
+// var value = str.concat('for','Geeks');
+// console.log(value);
+
+// 5 indexOf, lastIndexOf
+
+// var str = 'Departed Train Train';
+ 
+// // Finding index of occurrence of 'Train'
+// var index = str.indexOf('Train');
+// console.log(index);
+
+// var str1 = 'GeeksforGeeksfor'; 
+// var index1 = str1.lastIndexOf('for'); 
+// console.log(index1);
+
+// 6 toUpperCase, toLowerCase
+
+// var str = 'GEEKSFORGEEKS';
+// var string = str.toLowerCase();
+
+// var str1 = 'abcde';
+// var string1 = str1.toUpperCase();
+
+// console.log(string, string1);
+
+// 7 startsWith, endsWith
+
+// var str = 'Geeks for Geeks';
+// var value = str.startsWith('Gee');
+
+// var str = 'Geeks for Geeks';
+// var value1 = str.endsWith('Geeks');
+
+// console.log(value, value1);
+
+// 8 slice
+
+// var A = 'Geeks for Geeks';
+ 
+// a = A.slice(0,5);
+// b = A.slice(6,9);
+// c = A.slice(10);
+// console.log(a, b, c);
+
+// 9 trim, trimEnd, trimStart
+
+var str = "  GeeksforGeeks      ";
+var st = str.trim();
+var st1 = str.trimStart();
+var st2 = str.trimEnd();
+console.log(st, st1, st2);
+
