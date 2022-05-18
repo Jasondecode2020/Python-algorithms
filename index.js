@@ -167,16 +167,16 @@
 
 // var str = 'JavaScript is object oriented language';
   
-// // Finding the character at given index 
-// var value = str.charAt(0); 
+// // Finding the character at given index
+// var value = str.charAt(0);
 // var value1 = str.charAt(4);
 // var value2 = str.charCodeAt(1);
 // console.log(value, value1, value2);
 
 // 4 concat
-// var str = 'Geeks'; 
+// var str = 'Geeks';
   
-// // Joining the strings together 
+// // Joining the strings together
 // var value = str.concat('for','Geeks');
 // console.log(value);
 
@@ -188,8 +188,8 @@
 // var index = str.indexOf('Train');
 // console.log(index);
 
-// var str1 = 'GeeksforGeeksfor'; 
-// var index1 = str1.lastIndexOf('for'); 
+// var str1 = 'GeeksforGeeksfor';
+// var index1 = str1.lastIndexOf('for');
 // console.log(index1);
 
 // 6 toUpperCase, toLowerCase
@@ -222,10 +222,17 @@
 // console.log(a, b, c);
 
 // 9 trim, trimEnd, trimStart
+// let num = [1, 2]
+// console.log(num[-1])
 
-var str = "  GeeksforGeeks      ";
-var st = str.trim();
-var st1 = str.trimStart();
-var st2 = str.trimEnd();
-console.log(st, st1, st2);
+// const s = "124"
+// console.log(s.slice(0, 1))
 
+// console.log(+'111')
+// console.log(+'box')
+
+// console.log(['a', 'b', 'c'].reverse())
+
+for (const [r, c] of []) {
+  console.log(r * c)
+}
