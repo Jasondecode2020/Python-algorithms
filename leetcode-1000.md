@@ -463,5 +463,137 @@ class Solution:
         for house in houses:
             radius = max(radius, closest(heaters, house))
         return radius
+```
 
+### 24
+
+403. Frog Jump
+
+```python
+class Solution:
+    def canCross(self, stones: List[int]) -> bool:
+        n = len(stones)
+        stoneSet = set(stones)
+        visited = set()
+        def goFurther(value, units):
+            if (value + units not in stoneSet) or ((value,units) in visited):
+                return False
+            if value + units == stones[n-1]:
+                return True
+            visited.add((value,units))
+            return goFurther(value + units,units) or goFurther(value + units,units - 1) or goFurther(value + units,units + 1)
+        return goFurther(stones[0], 1)
+```
+
+### 25
+
+658. Find K Closest Elements
+
+```python
+class Solution:
+    def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
+        n = len(arr)
+        start = 0
+        end = n - k
+        while start < end:
+            mid = (start + end) // 2
+            if x - arr[mid] > arr[mid + k] - x:  # move right
+                start = mid + 1
+            else:
+                end = mid
+        return arr[start: start + k]
+```
+
+### 26 382. Linked List Random Node
+
+https://leetcode.com/problems/linked-list-random-node/discuss/1672358/C%2B%2BPythonJava-Reservoir-sampling-oror-Prove-step-by-step-oror-Image
+
+```python
+class Solution:
+
+    def __init__(self, head: Optional[ListNode]):
+        self.nodes = []
+        while head:
+            self.nodes.append(head.val)
+            head = head.next
+    def getRandom(self) -> int:
+        return random.choice(self.nodes)
+```
+
+### 27 817. Linked List Components
+
+```python
+class Solution:
+    def numComponents(self, head: Optional[ListNode], nums: List[int]) -> int:
+        s = set(nums)
+        connected = False
+        count = 0
+        while head:
+            if head.val in s and not connected:
+                count += 1
+                connected = True
+            elif not head.val in s and connected:
+                connected = False
+            head = head.next
+        return count
+```
+
+### 29 925. Long Pressed Name
+
+```python
+class Solution:
+    def isLongPressedName(self, name: str, typed: str) -> bool:
+        def getFrequencyArray(name):
+            arr = []
+            i = 0
+            count = 1
+            while i + 1 < len(name):
+                if name[i] == name[i + 1]:
+                    count += 1
+                else:
+                    arr.append([name[i], count])
+                    count = 1
+                i += 1
+            if arr and name[-1] == arr[-1][0]:
+                arr[-1][1] += 1
+            else:
+                arr.append([name[-1], 1])
+            return arr
+
+        nameArr = getFrequencyArray(name)
+        typedArr = getFrequencyArray(typed)
+        if (len(nameArr) != len(typedArr)):
+            return False
+        for i in range(len(nameArr)):
+            if nameArr[i][0] != typedArr[i][0] or nameArr[i][1] > typedArr[i][1]:
+                return False
+        return True
+```
+
+### 30 859. Buddy Strings
+
+```python
+class Solution:
+    def buddyStrings(self, s: str, goal: str) -> bool:
+        # if lengths are different, then must be false
+        if len(s) != len(goal):
+            return False
+        # If s and goal are same, then A must have duplicate character
+        if s == goal:
+            seen = set()
+            for a in s:
+                if a in seen:
+                    return True
+                seen.add(a)
+            return False
+
+        pair = []
+        # when s and goal are not same
+        for a, b in zip(s, goal):
+            if a != b:
+                pair.append((a, b))
+            if len(pair) > 2:
+                return False
+
+        return len(pair) == 2 and pair[0] == pair[1][::-1]
 ```
