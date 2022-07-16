@@ -597,3 +597,109 @@ class Solution:
 
         return len(pair) == 2 and pair[0] == pair[1][::-1]
 ```
+
+dfs
+
+1 200. Number of Islands
+
+```python
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        def dfs(grid, r, c):
+            grid[r][c] = '0'
+            points = [[r - 1, c], [r + 1, c], [r, c + 1], [r, c - 1]]
+            for row, col in points:
+                if row >= 0 and col >= 0 and row < len(grid) and col < len(grid[0]) and grid[row][col] == '1':
+                    dfs(grid, row, col)
+
+        count = 0
+        ROWS, COLS = len(grid), len(grid[0])
+        for i in range(ROWS):
+            for j in range(COLS):
+                if grid[i][j] == '1':
+                    dfs(grid, i, j)
+                    count += 1
+        return count
+```
+
+2 94. Binary Tree Inorder Traversal
+
+```python
+# recursive
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        def dfs(node, arr):
+            if not node:
+                return node
+            dfs(node.left, arr)
+            arr.append(node.val)
+            dfs(node.right, arr)
+            return arr
+        return dfs(root, [])
+# iterative
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res, stack = [], []
+        while True:
+            while root:
+                stack.append(root)
+                root = root.left
+            if not stack:
+                return res
+            node = stack.pop()
+            res.append(node.val)
+            root = node.right
+```
+
+3 144. Binary Tree Preorder Traversal
+
+```python
+# recursive
+class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        def dfs(node, arr):
+            if not node:
+                return node
+            arr.append(node.val)
+            dfs(node.left, arr)
+            dfs(node.right, arr)
+            return arr
+        return dfs(root, [])
+# iterative
+class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res, stack = [], [root]
+        while stack:
+            node = stack.pop()
+            if node:
+                res.append(node.val)
+                stack.extend([node.right, node.left])
+        return res
+```
+
+4 145. Binary Tree Postorder Traversal
+
+```python
+# recursive
+class Solution:
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        def dfs(node, arr):
+            if not node:
+                return node
+            dfs(node.left, arr)
+            dfs(node.right, arr)
+            arr.append(node.val)
+            return arr
+        return dfs(root, [])
+# iterative
+class Solution:
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        # modified preorder
+        res, stack = [], [root]
+        while stack:
+            node = stack.pop()
+            if node:
+                res.append(node.val)
+                stack.extend([node.left, node.right])
+        return res[::-1]
+```
