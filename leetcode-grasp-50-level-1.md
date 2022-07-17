@@ -1,3 +1,8 @@
+#####################################################################################################
+The first version of grasp 50 and it is level 1: entry level, there is no hard questions and
+most of them will be easy questions.
+#####################################################################################################
+
 ### 1 dfs
 
 200. Number of Islands
@@ -112,7 +117,7 @@ class Solution:
         return res[::-1]
 ```
 
-### 5 hash table
+### 5 hash table similar to Contains Duplicate II
 
 1. Two Sum
 
@@ -624,27 +629,43 @@ class Solution:
 
 ### 34 Tree
 
+590. N-ary Tree Preorder Traversal
+
+```python
+class Solution:
+    def postorder(self, root: 'Node') -> List[int]:
+        if not root:
+            return root
+        res = []
+        if root.children:
+            for child in root.children:
+                res += self.postorder(child)
+        res += [root.val]
+        return res
+```
+
+### 35 Tree
+
 102. Binary Tree Level Order Traversal
 
 ```python
 class Solution:
     def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
-        if not root:
-            return []
-        queue, result = deque([root]), []
+        if not root: return []
+        queue, res = deque([root]), []
 
         while queue:
             level = []
-            for i in range(len(queue)):
+            for i in range(len(queue)): # level count
                 node = queue.popleft()
                 level.append(node.val)
                 if node.left:  queue.append(node.left)
                 if node.right: queue.append(node.right)
-            result.append(level)
-        return result
+            res.append(level)
+        return res
 ```
 
-### 35 panlindromw
+### 36 panlindrom
 
 409. Longest Palindrome
 
@@ -652,8 +673,7 @@ class Solution:
 class Solution:
     def longestPalindrome(self, s: str) -> int:
         d = Counter(s)
-        res = 0
-        odd = 0
+        res = odd = 0
         for c in d:
             if d[c] % 2 == 0:
                 res += d[c]
@@ -663,303 +683,218 @@ class Solution:
         return res if odd == 0 else res + 1
 ```
 
-############################################################
+### 37 prefix
 
-### 11
-
-300. Longest Increasing Subsequence
+14. Longest Common Prefix
 
 ```python
 class Solution:
-    def lengthOfLIS(self, nums: List[int]) -> int:
-        res = []
-        for n in nums:
-            if not res or n > res[-1]:
-                res.append(n)
-            else:
-                l, r = 0, len(res) - 1
-                while l < r:
-                    m = (l + r) // 2
-                    if res[m] < n:
-                        l += 1
-                    else:
-                        r = m
-                res[l] = n
-        return len(res)
-```
-
-### 12
-
-354. Russian Doll Envelopes
-
-```python
-class Solution:
-    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
-        envelopes.sort(key = lambda x: (x[0], -x[1]))
-        nums = []
-        for item in envelopes:
-            nums.append(item[1])
-
-        # LIS
-        res = []
-        for n in nums:
-            if not res or n > res[-1]:
-                res.append(n)
-            else:
-                l, r = 0, len(res) - 1
-                while l < r:
-                    m = (l + r) // 2
-                    if res[m] < n:
-                        l += 1
-                    else:
-                        r = m
-                res[l] = n
-        return len(res)
-```
-
-### 19
-
-1094. Car Pooling
-      method 1
-
-```python
-class Solution:
-    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
-        trips.sort(key = lambda x : x[1])
-        minHeap = [] # python used min heap and used index 0 for heap calculation
-        curr = 0
-        for t in trips:
-            num, start, end = t
-            while minHeap and minHeap[0][0] <= start:
-                curr -= minHeap[0][1]
-                heapq.heappop(minHeap)
-            curr += num
-            if curr > capacity:
-                return False
-            heapq.heappush(minHeap, [end, num])
-        return True
-```
-
-method 2
-
-```python
-class Solution:
-    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
-        change = [0 for i in range(1001)]
-        for t in trips:
-            num, start, end = t
-            change[start] += num
-            change[end] -= num
-        curr = 0
-        for i in range(1001):
-            curr += change[i]
-            if curr > capacity:
-                return False
-        return True
-```
-
-### 20
-
-1638. Count Substrings That Differ by One Character
-
-```python
-class Solution:
-    def countSubstrings(self, s: str, t: str) -> int:
-        # count all numbers
-        res = 0
-        # brute force check all conditions
-        for i in range(len(s)):
-            for j in range(len(t)):
-                x, y = i, j
-                # check when to count res and when to stop
-                count = 0
-                while x < len(s) and y < len(t):
-                    if s[x] != t[y]:
-                        count += 1
-                    if count == 1:
-                        res += 1
-                    if count == 2:
-                        break
-                    x += 1
-                    y += 1
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        res = strs[0]
+        for item in strs:
+            while not item.startswith(res):
+                res = res[:-1]
         return res
 ```
 
-### 21
+### 38 Remove Duplicates
 
-299. Bulls and Cows
+26. Remove Duplicates from Sorted Array
 
 ```python
 class Solution:
-    def getHint(self, secret: str, guess: str) -> str:
-        bulls = 0
-        bucket = [0 for i in range(10)]
-        for s, g in zip(secret, guess):
-            if s == g:
-                bulls += 1
+    def removeDuplicates(self, nums: List[int]) -> int:
+        k = 1
+        for i in range(1, len(nums)):
+            if nums[i] != nums[i - 1]:
+                nums[k] = nums[i]
+                k += 1
+        return k
+```
+
+### 39 Remove Duplicates
+
+27. Remove Element
+
+```python
+class Solution:
+    def removeElement(self, nums: List[int], val: int) -> int:
+        l, r = 0, len(nums) - 1
+        while l <= r:
+            if nums[l] == val:
+                nums[l] = nums[r]
+                r -= 1
             else:
-                bucket[int(s)] += 1
-                bucket[int(g)] -= 1
-        return f'{bulls}A{len(secret) - bulls - sum(x for x in bucket if x > 0)}B'
+                l += 1
+        return r + 1
 ```
 
-### 23
+### 40 Remove Duplicates
 
-475. Heaters
+83. Remove Duplicates from Sorted List
 
 ```python
 class Solution:
-    def findRadius(self, houses: List[int], heaters: List[int]) -> int:
-        def closest(heaters, house):
-            l, r = 0, len(heaters) - 1
-            min_dist = float('inf')
-            while l <= r:
-                m = (l + r) // 2
-                min_dist = min(min_dist, abs(heaters[m] - house))
-                if heaters[m] < house:
-                    l = m + 1
-                else:
-                    r = m - 1
-            return min_dist
-
-        radius = 0
-        heaters.sort()
-        for house in houses:
-            radius = max(radius, closest(heaters, house))
-        return radius
+    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if not head:
+            return head
+        p = head
+        while p.next:
+            if p.val == p.next.val:
+                p.next = p.next.next
+            else:
+                p = p.next
+        return head
 ```
 
-### 24
+### 41 Duplicate
 
-403. Frog Jump
+217. Contains Duplicate
 
 ```python
 class Solution:
-    def canCross(self, stones: List[int]) -> bool:
-        n = len(stones)
-        stoneSet = set(stones)
-        visited = set()
-        def goFurther(value, units):
-            if (value + units not in stoneSet) or ((value,units) in visited):
-                return False
-            if value + units == stones[n-1]:
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        s = set()
+        for n in nums:
+            if n in s:
                 return True
-            visited.add((value,units))
-            return goFurther(value + units,units) or goFurther(value + units,units - 1) or goFurther(value + units,units + 1)
-        return goFurther(stones[0], 1)
+            s.add(n)
+        return False
 ```
 
-### 25
+### 42 similar to 2 sum
 
-658. Find K Closest Elements
+219. Contains Duplicate II
 
 ```python
 class Solution:
-    def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
-        n = len(arr)
-        start = 0
-        end = n - k
-        while start < end:
-            mid = (start + end) // 2
-            if x - arr[mid] > arr[mid + k] - x:  # move right
-                start = mid + 1
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        dic = {}
+        for i, v in enumerate(nums):
+            if v in dic and i - dic[v] <= k:
+                return True
+            dic[v] = i
+        return False
+```
+
+### 43 Remvoe elements
+
+203. Remove Linked List Elements
+
+```python
+class Solution:
+    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+        p = dummy = ListNode()
+        p.next = head
+        while p.next:
+            if p.next.val == val:
+                p.next = p.next.next
             else:
-                end = mid
-        return arr[start: start + k]
+                p = p.next
+        return dummy.next
 ```
 
-### 26 382. Linked List Random Node
+### 44 Remove Nth Node
 
-https://leetcode.com/problems/linked-list-random-node/discuss/1672358/C%2B%2BPythonJava-Reservoir-sampling-oror-Prove-step-by-step-oror-Image
+19. Remove Nth Node From End of List
 
 ```python
 class Solution:
-
-    def __init__(self, head: Optional[ListNode]):
-        self.nodes = []
-        while head:
-            self.nodes.append(head.val)
-            head = head.next
-    def getRandom(self) -> int:
-        return random.choice(self.nodes)
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        slow = fast = dummy = ListNode()
+        dummy.next = head
+        for i in range(n + 1):
+            fast = fast.next
+        while fast:
+            fast = fast.next
+            slow = slow.next
+        slow.next = slow.next.next
+        return dummy.next
 ```
 
-### 27 817. Linked List Components
+### 45 Array
+
+58. Length of Last Word
 
 ```python
 class Solution:
-    def numComponents(self, head: Optional[ListNode], nums: List[int]) -> int:
-        s = set(nums)
-        connected = False
-        count = 0
-        while head:
-            if head.val in s and not connected:
-                count += 1
-                connected = True
-            elif not head.val in s and connected:
-                connected = False
-            head = head.next
-        return count
+    def lengthOfLastWord(self, s: str) -> int:
+        s = s.strip()
+        return len(s.split(" ")[-1])
 ```
 
-### 29 925. Long Pressed Name
+### 46 binary search
+
+35. Search Insert Position
 
 ```python
 class Solution:
-    def isLongPressedName(self, name: str, typed: str) -> bool:
-        def getFrequencyArray(name):
-            arr = []
-            i = 0
-            count = 1
-            while i + 1 < len(name):
-                if name[i] == name[i + 1]:
-                    count += 1
-                else:
-                    arr.append([name[i], count])
-                    count = 1
-                i += 1
-            if arr and name[-1] == arr[-1][0]:
-                arr[-1][1] += 1
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        l, r = 0, len(nums) - 1
+        while l <= r:
+            m = (l + r) // 2
+            if nums[m] > target:
+                r = m - 1
+            elif nums[m] < target:
+                l = m + 1
             else:
-                arr.append([name[-1], 1])
-            return arr
-
-        nameArr = getFrequencyArray(name)
-        typedArr = getFrequencyArray(typed)
-        if (len(nameArr) != len(typedArr)):
-            return False
-        for i in range(len(nameArr)):
-            if nameArr[i][0] != typedArr[i][0] or nameArr[i][1] > typedArr[i][1]:
-                return False
-        return True
+                return m
+        return l
 ```
 
-### 30 859. Buddy Strings
+### 47 strStr
+
+28. Implement strStr()
 
 ```python
 class Solution:
-    def buddyStrings(self, s: str, goal: str) -> bool:
-        # if lengths are different, then must be false
-        if len(s) != len(goal):
-            return False
-        # If s and goal are same, then A must have duplicate character
-        if s == goal:
-            seen = set()
-            for a in s:
-                if a in seen:
-                    return True
-                seen.add(a)
-            return False
-
-        pair = []
-        # when s and goal are not same
-        for a, b in zip(s, goal):
-            if a != b:
-                pair.append((a, b))
-            if len(pair) > 2:
-                return False
-
-        return len(pair) == 2 and pair[0] == pair[1][::-1]
+    def strStr(self, haystack: str, needle: str) -> int:
+        for i in range(len(haystack)):
+            if haystack[i:].startswith(needle):
+                return i
+        return -1
 ```
 
-dfs
+### 48 Plus One
+
+66. Plus One
+
+```python
+class Solution:
+    def plusOne(self, digits: List[int]) -> List[int]:
+        if digits[-1] != 9:
+            digits[-1] = digits[-1] + 1
+        else:
+            res = int(''.join([str(item) for item in digits])) + 1
+            digits = [int(i) for i in list(str(res))]
+        return digits
+```
+
+### 49 Anagram
+
+242. Valid Anagram
+
+```python
+class Solution:
+    def isAnagram(self, s: str, t: str) -> bool:
+        return Counter(s) == Counter(t)
+```
+
+### 50 Palindrome
+
+125. Valid Palindrome
+
+```python
+cclass Solution:
+    def isPalindrome(self, s: str) -> bool:
+        def helper(s):
+            for i in range(len(s) // 2):
+                if s[i] != s[len(s) - i - 1]:
+                    return False
+            return True
+        res = ''
+        for c in s:
+            if c.isalnum():
+                res += c.lower()
+        return helper(res)
+```

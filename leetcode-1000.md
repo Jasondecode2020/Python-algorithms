@@ -703,3 +703,302 @@ class Solution:
                 stack.extend([node.left, node.right])
         return res[::-1]
 ```
+
+### 11
+
+300. Longest Increasing Subsequence
+
+```python
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        res = []
+        for n in nums:
+            if not res or n > res[-1]:
+                res.append(n)
+            else:
+                l, r = 0, len(res) - 1
+                while l < r:
+                    m = (l + r) // 2
+                    if res[m] < n:
+                        l += 1
+                    else:
+                        r = m
+                res[l] = n
+        return len(res)
+```
+
+### 12
+
+354. Russian Doll Envelopes
+
+```python
+class Solution:
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        envelopes.sort(key = lambda x: (x[0], -x[1]))
+        nums = []
+        for item in envelopes:
+            nums.append(item[1])
+
+        # LIS
+        res = []
+        for n in nums:
+            if not res or n > res[-1]:
+                res.append(n)
+            else:
+                l, r = 0, len(res) - 1
+                while l < r:
+                    m = (l + r) // 2
+                    if res[m] < n:
+                        l += 1
+                    else:
+                        r = m
+                res[l] = n
+        return len(res)
+```
+
+### 19
+
+1094. Car Pooling
+      method 1
+
+```python
+class Solution:
+    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
+        trips.sort(key = lambda x : x[1])
+        minHeap = [] # python used min heap and used index 0 for heap calculation
+        curr = 0
+        for t in trips:
+            num, start, end = t
+            while minHeap and minHeap[0][0] <= start:
+                curr -= minHeap[0][1]
+                heapq.heappop(minHeap)
+            curr += num
+            if curr > capacity:
+                return False
+            heapq.heappush(minHeap, [end, num])
+        return True
+```
+
+method 2
+
+```python
+class Solution:
+    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
+        change = [0 for i in range(1001)]
+        for t in trips:
+            num, start, end = t
+            change[start] += num
+            change[end] -= num
+        curr = 0
+        for i in range(1001):
+            curr += change[i]
+            if curr > capacity:
+                return False
+        return True
+```
+
+### 20
+
+1638. Count Substrings That Differ by One Character
+
+```python
+class Solution:
+    def countSubstrings(self, s: str, t: str) -> int:
+        # count all numbers
+        res = 0
+        # brute force check all conditions
+        for i in range(len(s)):
+            for j in range(len(t)):
+                x, y = i, j
+                # check when to count res and when to stop
+                count = 0
+                while x < len(s) and y < len(t):
+                    if s[x] != t[y]:
+                        count += 1
+                    if count == 1:
+                        res += 1
+                    if count == 2:
+                        break
+                    x += 1
+                    y += 1
+        return res
+```
+
+### 21
+
+299. Bulls and Cows
+
+```python
+class Solution:
+    def getHint(self, secret: str, guess: str) -> str:
+        bulls = 0
+        bucket = [0 for i in range(10)]
+        for s, g in zip(secret, guess):
+            if s == g:
+                bulls += 1
+            else:
+                bucket[int(s)] += 1
+                bucket[int(g)] -= 1
+        return f'{bulls}A{len(secret) - bulls - sum(x for x in bucket if x > 0)}B'
+```
+
+### 23
+
+475. Heaters
+
+```python
+class Solution:
+    def findRadius(self, houses: List[int], heaters: List[int]) -> int:
+        def closest(heaters, house):
+            l, r = 0, len(heaters) - 1
+            min_dist = float('inf')
+            while l <= r:
+                m = (l + r) // 2
+                min_dist = min(min_dist, abs(heaters[m] - house))
+                if heaters[m] < house:
+                    l = m + 1
+                else:
+                    r = m - 1
+            return min_dist
+
+        radius = 0
+        heaters.sort()
+        for house in houses:
+            radius = max(radius, closest(heaters, house))
+        return radius
+```
+
+### 24
+
+403. Frog Jump
+
+```python
+class Solution:
+    def canCross(self, stones: List[int]) -> bool:
+        n = len(stones)
+        stoneSet = set(stones)
+        visited = set()
+        def goFurther(value, units):
+            if (value + units not in stoneSet) or ((value,units) in visited):
+                return False
+            if value + units == stones[n-1]:
+                return True
+            visited.add((value,units))
+            return goFurther(value + units,units) or goFurther(value + units,units - 1) or goFurther(value + units,units + 1)
+        return goFurther(stones[0], 1)
+```
+
+### 25
+
+658. Find K Closest Elements
+
+```python
+class Solution:
+    def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
+        n = len(arr)
+        start = 0
+        end = n - k
+        while start < end:
+            mid = (start + end) // 2
+            if x - arr[mid] > arr[mid + k] - x:  # move right
+                start = mid + 1
+            else:
+                end = mid
+        return arr[start: start + k]
+```
+
+### 26 382. Linked List Random Node
+
+https://leetcode.com/problems/linked-list-random-node/discuss/1672358/C%2B%2BPythonJava-Reservoir-sampling-oror-Prove-step-by-step-oror-Image
+
+```python
+class Solution:
+
+    def __init__(self, head: Optional[ListNode]):
+        self.nodes = []
+        while head:
+            self.nodes.append(head.val)
+            head = head.next
+    def getRandom(self) -> int:
+        return random.choice(self.nodes)
+```
+
+### 27 817. Linked List Components
+
+```python
+class Solution:
+    def numComponents(self, head: Optional[ListNode], nums: List[int]) -> int:
+        s = set(nums)
+        connected = False
+        count = 0
+        while head:
+            if head.val in s and not connected:
+                count += 1
+                connected = True
+            elif not head.val in s and connected:
+                connected = False
+            head = head.next
+        return count
+```
+
+### 29 925. Long Pressed Name
+
+```python
+class Solution:
+    def isLongPressedName(self, name: str, typed: str) -> bool:
+        def getFrequencyArray(name):
+            arr = []
+            i = 0
+            count = 1
+            while i + 1 < len(name):
+                if name[i] == name[i + 1]:
+                    count += 1
+                else:
+                    arr.append([name[i], count])
+                    count = 1
+                i += 1
+            if arr and name[-1] == arr[-1][0]:
+                arr[-1][1] += 1
+            else:
+                arr.append([name[-1], 1])
+            return arr
+
+        nameArr = getFrequencyArray(name)
+        typedArr = getFrequencyArray(typed)
+        if (len(nameArr) != len(typedArr)):
+            return False
+        for i in range(len(nameArr)):
+            if nameArr[i][0] != typedArr[i][0] or nameArr[i][1] > typedArr[i][1]:
+                return False
+        return True
+```
+
+### 30 859. Buddy Strings
+
+```python
+class Solution:
+    def buddyStrings(self, s: str, goal: str) -> bool:
+        # if lengths are different, then must be false
+        if len(s) != len(goal):
+            return False
+        # If s and goal are same, then A must have duplicate character
+        if s == goal:
+            seen = set()
+            for a in s:
+                if a in seen:
+                    return True
+                seen.add(a)
+            return False
+
+        pair = []
+        # when s and goal are not same
+        for a, b in zip(s, goal):
+            if a != b:
+                pair.append((a, b))
+            if len(pair) > 2:
+                return False
+
+        return len(pair) == 2 and pair[0] == pair[1][::-1]
+```
+
+dfs
