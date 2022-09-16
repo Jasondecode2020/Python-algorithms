@@ -3,6 +3,8 @@ The first version of grasp 50 and it is level 1: entry level, there is no hard q
 most of them will be easy questions.
 #####################################################################################################
 
+## 200 is similar to 547
+
 ### 1 dfs
 
 200. Number of Islands
@@ -25,6 +27,28 @@ class Solution:
                     dfs(grid, i, j)
                     count += 1
         return count
+```
+
+### 1 dfs
+
+547. Number of Provinces
+
+```python
+class Solution:
+    def findCircleNum(self, isConnected: List[List[int]]) -> int:
+        def dfs(start):
+            visited.add(start)
+            for end in range(len(isConnected)):
+                if isConnected[start][end] and end not in visited:
+                    dfs(end)
+
+        numberOfProvinces = 0
+        visited = set()
+        for start in range(len(isConnected)):
+            if start not in visited:
+                dfs(start)
+                numberOfProvinces += 1
+        return numberOfProvinces
 ```
 
 ## 2, 3 and 4 are similar

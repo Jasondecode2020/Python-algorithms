@@ -165,25 +165,6 @@ class Solution:
         return profit
 ```
 
-### 10
-
-409. Longest Palindrome
-
-```python
-class Solution:
-    def longestPalindrome(self, s: str) -> int:
-        d = Counter(s)
-        res = 0
-        odd = 0
-        for c in d:
-            if d[c] % 2 == 0:
-                res += d[c]
-            else:
-                res += d[c] - 1
-                odd += 1
-        return res if odd == 0 else res + 1
-```
-
 ### 11
 
 300. Longest Increasing Subsequence
@@ -289,55 +270,6 @@ class Solution:
         return second
 ```
 
-### 16
-
-70. Climbing Stairs
-
-```python
-class Solution:
-    def climbStairs(self, n: int) -> int:
-        dp = [1 for i in range(n + 1)]
-        for i in range(2, n + 1):
-            dp[i] = dp[i - 1] + dp[i - 2]
-        return dp[-1]
-```
-
-### 17
-
-704. Binary Search
-
-```python
-class Solution:
-    def search(self, nums: List[int], target: int) -> int:
-        l, r = 0, len(nums) - 1
-        while l <= r:
-            m = (l + r) // 2
-            if nums[m] > target:
-                r = m - 1
-            elif nums[m] < target:
-                l = m + 1
-            else:
-                return m
-        return -1
-```
-
-### 18
-
-278. First Bad Version
-
-```python
-class Solution:
-    def firstBadVersion(self, n: int) -> int:
-        l, r = 1, n
-        while l < r:
-            m = (l + r) // 2
-            if not isBadVersion(m):
-                l = m + 1
-            else:
-                r = m
-        return r
-```
-
 ### 19
 
 1094. Car Pooling
@@ -404,21 +336,6 @@ class Solution:
                     x += 1
                     y += 1
         return res
-```
-
-### 21
-
-1. Two Sum
-
-```python
-class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        d = {}
-        for i, val in enumerate(nums):
-            res = target - val
-            if res in d:
-                return [d[res], i]
-            d[val] = i
 ```
 
 ### 22

@@ -1,240 +1,304 @@
 #####################################################################################################
-The second version of grasp 50 and it is level 2: entry level, there is no hard questions and
-most of them will be medium questions.
+The second version of grasp 50 and it is level 2: entry level, there is a few hard questions and
+most of them will be easy and medium questions.
 #####################################################################################################
 
-### 1 dfs
+### 1 dp nlog(n)
 
-200. Number of Islands
+300. Longest Increasing Subsequence
 
 ```python
 class Solution:
-    def numIslands(self, grid: List[List[str]]) -> int:
-        def dfs(grid, r, c):
-            grid[r][c] = '0'
-            points = [[r - 1, c], [r + 1, c], [r, c + 1], [r, c - 1]]
-            for row, col in points:
-                if row >= 0 and col >= 0 and row < len(grid) and col < len(grid[0]) and grid[row][col] == '1':
-                    dfs(grid, row, col)
-
-        count = 0
-        ROWS, COLS = len(grid), len(grid[0])
-        for i in range(ROWS):
-            for j in range(COLS):
-                if grid[i][j] == '1':
-                    dfs(grid, i, j)
-                    count += 1
-        return count
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        def binarySearch(res):
+            l, r = 0, len(res) - 1
+            while l < r:
+                m = (l + r) // 2
+                if res[m] < n:
+                    l += 1
+                else:
+                    r = m
+            return l
+        res = []
+        for n in nums:
+            if not res or n > res[-1]:
+                res.append(n)
+            else:
+                stackIndex = binarySearch(res)
+                res[stackIndex] = n
+        return len(res)
 ```
 
-## 2, 3 and 4 are similar
+### 2 dp
 
-### 2 dfs
+### 12
 
-94. Binary Tree Inorder Traversal
+354. Russian Doll Envelopes
 
 ```python
-# recursive
 class Solution:
-    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        def dfs(node, arr):
-            if not node:
-                return node
-            dfs(node.left, arr)
-            arr.append(node.val)
-            dfs(node.right, arr)
-            return arr
-        return dfs(root, [])
-# iterative
-class Solution:
-    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        res, stack = [], []
-        while True:
-            while root:
-                stack.append(root)
-                root = root.left
-            if not stack:
-                return res
-            node = stack.pop()
-            res.append(node.val)
-            root = node.right
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        envelopes.sort(key = lambda x: (x[0], -x[1]))
+        nums = []
+        for item in envelopes:
+            nums.append(item[1])
+
+        # LIS random sort
+        res = []
+        for n in nums:
+            if not res or n > res[-1]:
+                res.append(n)
+            else:
+                l, r = 0, len(res) - 1
+                while l < r:
+                    m = (l + r) // 2
+                    if res[m] < n:
+                        l += 1
+                    else:
+                        r = m
+                res[l] = n
+        return len(res)
 ```
 
-### 3 dfs
+### 3 sets
 
-144. Binary Tree Preorder Traversal
+36. Valid Sudoku
 
 ```python
-# recursive
 class Solution:
-    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        def dfs(node, arr):
-            if not node:
-                return node
-            arr.append(node.val)
-            dfs(node.left, arr)
-            dfs(node.right, arr)
-            return arr
-        return dfs(root, [])
-# iterative
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        rows = defaultdict(set) # 9 sets of rows
+        cols = defaultdict(set) # 9 sets of cols
+        squares = defaultdict(set) # 9 sets of squares = (r /3, c /3)
+        for r in range(9):
+            for c in range(9):
+                if (board[r][c] in rows[r] or board[r][c] in cols[c] or board[r][c] in squares[(r // 3, c // 3)]):
+                    return False
+                elif board[r][c] != ".":
+                    cols[c].add(board[r][c])
+                    rows[r].add(board[r][c])
+                    squares[(r // 3, c // 3)].add(board[r][c])
+        return True
+```
+
+### 4 backtracking
+
+37. Sudoku Solver
+
+```python
 class Solution:
-    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        res, stack = [], [root]
-        while stack:
-            node = stack.pop()
-            if node:
-                res.append(node.val)
-                stack.extend([node.right, node.left])
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        """
+        Do not return anything, modify board in-place instead.
+        """
+        rows, cols, block, seen = defaultdict(set), defaultdict(set), defaultdict(set), deque([])
+        for i in range(9):
+            for j in range(9):
+                if board[i][j] != ".":
+                    rows[i].add(board[i][j])
+                    cols[j].add(board[i][j])
+                    block[(i // 3,j // 3)].add(board[i][j])
+                else:
+                    seen.append((i,j))
+
+        def dfs():
+            if not seen:
+                return True
+
+            r,c = seen[0]
+            t = (r//3,c//3)
+            for n in {'1','2','3','4','5','6','7','8','9'}:
+                if n not in rows[r] and n not in cols[c] and n not in block[t]:
+                    board[r][c]=n
+                    rows[r].add(n)
+                    cols[c].add(n)
+                    block[t].add(n)
+                    seen.popleft()
+                    if dfs():
+                        return True
+                    else:
+                        board[r][c]="."
+                        rows[r].discard(n)
+                        cols[c].discard(n)
+                        block[t].discard(n)
+                        seen.appendleft((r,c))
+            return False
+
+        dfs()
+```
+
+### 5 backtracking
+
+51. N-Queens
+
+```python
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        col, posDiag, negDiag = set(), set(), set()
+        res = []
+        board = [["."] * n for i in range(n)]
+
+        def backtrack(r):
+            if r == n:
+                copy = ["".join(row) for row in board]
+                res.append(copy)
+                return
+            for c in range(n):
+                if c in col or (r + c) in posDiag or (r - c) in negDiag:
+                    continue
+
+                col.add(c)
+                posDiag.add(r + c)
+                negDiag.add(r - c)
+                board[r][c] = "Q"
+                backtrack(r + 1)
+                col.remove(c)
+                posDiag.remove(r + c)
+                negDiag.remove(r - c)
+                board[r][c] = "."
+        backtrack(0)
         return res
 ```
 
-### 4 dfs
+### 6 backtracking
 
-145. Binary Tree Postorder Traversal
-
-```python
-# recursive
-class Solution:
-    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        def dfs(node, arr):
-            if not node:
-                return node
-            dfs(node.left, arr)
-            dfs(node.right, arr)
-            arr.append(node.val)
-            return arr
-        return dfs(root, [])
-# iterative
-class Solution:
-    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
-        # modified preorder
-        res, stack = [], [root]
-        while stack:
-            node = stack.pop()
-            if node:
-                res.append(node.val)
-                stack.extend([node.left, node.right])
-        return res[::-1]
-```
-
-### 5 hash table similar to Contains Duplicate II
-
-1. Two Sum
+52. N-Queens II
 
 ```python
 class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        d = {}
-        for idx, val in enumerate(nums):
-            res = target - val
-            if res in d:
-                return [d[res], idx]
-            d[val] = idx
+    def totalNQueens(self, n: int) -> int:
+        col, posDiag, negDiag, res = set(), set(), set(), []
+        board = [["."] * n for i in range(n)]
+
+        def backtrack(r):
+            if r == n:
+                copy = ["".join(row) for row in board]
+                res.append(copy)
+            for c in range(n):
+                if c not in col and (r + c) not in posDiag and (r - c) not in negDiag:
+                    col.add(c)
+                    posDiag.add(r + c)
+                    negDiag.add(r - c)
+                    board[r][c] = "Q"
+                    backtrack(r + 1)
+                    col.remove(c)
+                    posDiag.remove(r + c)
+                    negDiag.remove(r - c)
+                    board[r][c] = "."
+        backtrack(0)
+        return len(res)
 ```
-
-### 6 linked list
-
-21. Merge Two Sorted Lists
-
-```python
-class Solution:
-    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
-        p = dummy = ListNode()
-        while list1 and list2:
-            if list1.val > list2.val:
-                p.next = ListNode(list2.val)
-                list2 = list2.next
-            else:
-                p.next = ListNode(list1.val)
-                list1 = list1.next
-            p = p.next
-        p.next = list1 or list2
-        return dummy.next
-```
-
-## 7 and 8 are similar
 
 ### 7 reverse number
 
-9. Palindrome Number
+279. Perfect Squares
 
 ```python
 class Solution:
-    def isPalindrome(self, x: int) -> bool:
-        if x < 0:
-            return False
-
-        def reverseNoneNegativeNumber(x):
-            res = 0
-            while x:
-                res = 10 * res + x % 10
-                x //= 10
-            return res
-        return reverseNoneNegativeNumber(x) == x
+    def numSquares(self, n: int) -> int:
+        dp = [0] + [n] * n
+        for i in range(1, n + 1):
+            res = []
+            for j in range(1, i + 1):
+                if i - j * j < 0:
+                    break
+                res.append(1 + dp[i - j * j])
+            dp[i] = min(res)
+        return dp[-1]
 ```
 
 ### 8 reverse number
 
-7. Reverse Integer
+231. Power of Two
 
 ```python
 class Solution:
-    def reverse(self, x: int) -> int:
-        def reverseNoneNegativeNumber(x):
-            res = 0
-            while x:
-                res = 10 * res + x % 10
-                x //= 10
-            return res
-        res = reverseNoneNegativeNumber(x) if x > 0 else -reverseNoneNegativeNumber(-x)
-        if res <= 2 ** 31 - 1 and res >= -2 ** 31:
-            return res
-        return 0
+    def isPowerOfTwo(self, n: int) -> bool:
+        if n <= 0: return False
+        res = 0
+        while n:
+            res += n & 1
+            n >>= 1
+        return res == 1
+# Follow up: Could you solve it without loops/recursion?
+class Solution:
+    def isPowerOfTwo(self, n: int) -> bool:
+        if n==1:
+            return True
+        elif n != 0 and n & (n-1) == 0:
+            return True
+        else:
+            return False
 ```
-
-## 9 and 10 are similar
 
 ### 9 prefix sum
 
-1480. Running Sum of 1d Array
+209. Minimum Size Subarray Sum
 
 ```python
 class Solution:
-    def runningSum(self, nums: List[int]) -> List[int]:
-        for i in range(1, len(nums)):
-            nums[i] += nums[i - 1]
-        return nums
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        l, total = 0, 0
+        res = float("inf")
+        for r in range(len(nums)):
+            total += nums[r]
+            while total >= target:
+                res = min(res, r - l + 1)
+                total -= nums[l]
+                l += 1
+        return 0 if res == float("inf") else res
 ```
 
 ### 10 prefix sum
 
-724. Find Pivot Index
+665. Non-decreasing Array
 
 ```python
 class Solution:
-    def pivotIndex(self, nums: List[int]) -> int:
-        right_sum, left_sum = sum(nums), 0
-        for i in range(len(nums)):
-            right_sum -= nums[i]
-            if right_sum == left_sum:
-                return i
-            left_sum += nums[i]
-        return -1
+    def checkPossibility(self, nums: List[int]) -> bool:
+        count = 0
+        for i in range(len(nums) - 1):
+            if nums[i] <= nums[i + 1]:
+                continue
+            if i == 0 or nums[i + 1] >= nums[i - 1]:
+                nums[i] = nums[i + 1]
+            else:
+                nums[i + 1] = nums[i]
+            count += 1
+            if count == 2:
+                return False
+        return count <= 1
 ```
 
 ### 11 1d dp
 
-509. Fibonacci Number
+792. Number of Matching Subsequences
 
 ```python
 class Solution:
-    def fib(self, n: int) -> int:
-        if n < 2:
-            return n
-        first, second = 0, 1
-        for i in range(2, n + 1):
-            second, first = second + first, second
-        return second
+    def numMatchingSubseq(self, s: str, words: List[str]) -> int:
+        def isSubsequence(s, t): # s is a subsequence of t
+            i, j = 0, 0
+            while i < len(s) and j < len(t):
+                if s[i] == t[j]:
+                    i += 1
+                    j += 1
+                else:
+                    j += 1
+            return i == len(s)
+        cache = {}
+        res = 0
+        for w in words:
+            if w in cache:
+                if cache[w]:
+                    res += 1
+                continue
+            if isSubsequence(w, s):
+                cache[w] = True
+                res += 1
+            else:
+                cache[w] = False
+        return res
 ```
 
 ### 12 1d dp
@@ -897,4 +961,758 @@ cclass Solution:
             if c.isalnum():
                 res += c.lower()
         return helper(res)
+```
+
+#####################################################################################################
+
+### 19
+
+1094. Car Pooling
+      method 1
+
+```python
+class Solution:
+    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
+        trips.sort(key = lambda x : x[1])
+        minHeap = [] # python used min heap and used index 0 for heap calculation
+        curr = 0
+        for t in trips:
+            num, start, end = t
+            while minHeap and minHeap[0][0] <= start:
+                curr -= minHeap[0][1]
+                heapq.heappop(minHeap)
+            curr += num
+            if curr > capacity:
+                return False
+            heapq.heappush(minHeap, [end, num])
+        return True
+```
+
+method 2
+
+```python
+class Solution:
+    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
+        change = [0 for i in range(1001)]
+        for t in trips:
+            num, start, end = t
+            change[start] += num
+            change[end] -= num
+        curr = 0
+        for i in range(1001):
+            curr += change[i]
+            if curr > capacity:
+                return False
+        return True
+```
+
+### 20
+
+1638. Count Substrings That Differ by One Character
+
+```python
+class Solution:
+    def countSubstrings(self, s: str, t: str) -> int:
+        # count all numbers
+        res = 0
+        # brute force check all conditions
+        for i in range(len(s)):
+            for j in range(len(t)):
+                x, y = i, j
+                # check when to count res and when to stop
+                count = 0
+                while x < len(s) and y < len(t):
+                    if s[x] != t[y]:
+                        count += 1
+                    if count == 1:
+                        res += 1
+                    if count == 2:
+                        break
+                    x += 1
+                    y += 1
+        return res
+```
+
+### 22
+
+299. Bulls and Cows
+
+```python
+class Solution:
+    def getHint(self, secret: str, guess: str) -> str:
+        bulls = 0
+        bucket = [0 for i in range(10)]
+        for s, g in zip(secret, guess):
+            if s == g:
+                bulls += 1
+            else:
+                bucket[int(s)] += 1
+                bucket[int(g)] -= 1
+        return f'{bulls}A{len(secret) - bulls - sum(x for x in bucket if x > 0)}B'
+```
+
+### 23
+
+475. Heaters
+
+```python
+class Solution:
+    def findRadius(self, houses: List[int], heaters: List[int]) -> int:
+        def closest(heaters, house):
+            l, r = 0, len(heaters) - 1
+            min_dist = float('inf')
+            while l <= r:
+                m = (l + r) // 2
+                min_dist = min(min_dist, abs(heaters[m] - house))
+                if heaters[m] < house:
+                    l = m + 1
+                else:
+                    r = m - 1
+            return min_dist
+
+        radius = 0
+        heaters.sort()
+        for house in houses:
+            radius = max(radius, closest(heaters, house))
+        return radius
+```
+
+### 24
+
+403. Frog Jump
+
+```python
+class Solution:
+    def canCross(self, stones: List[int]) -> bool:
+        n = len(stones)
+        stoneSet = set(stones)
+        visited = set()
+        def goFurther(value, units):
+            if (value + units not in stoneSet) or ((value,units) in visited):
+                return False
+            if value + units == stones[n-1]:
+                return True
+            visited.add((value,units))
+            return goFurther(value + units,units) or goFurther(value + units,units - 1) or goFurther(value + units,units + 1)
+        return goFurther(stones[0], 1)
+```
+
+### 25
+
+658. Find K Closest Elements
+
+```python
+class Solution:
+    def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
+        n = len(arr)
+        start = 0
+        end = n - k
+        while start < end:
+            mid = (start + end) // 2
+            if x - arr[mid] > arr[mid + k] - x:  # move right
+                start = mid + 1
+            else:
+                end = mid
+        return arr[start: start + k]
+```
+
+### 26 382. Linked List Random Node
+
+https://leetcode.com/problems/linked-list-random-node/discuss/1672358/C%2B%2BPythonJava-Reservoir-sampling-oror-Prove-step-by-step-oror-Image
+
+```python
+class Solution:
+
+    def __init__(self, head: Optional[ListNode]):
+        self.nodes = []
+        while head:
+            self.nodes.append(head.val)
+            head = head.next
+    def getRandom(self) -> int:
+        return random.choice(self.nodes)
+```
+
+### 27 817. Linked List Components
+
+```python
+class Solution:
+    def numComponents(self, head: Optional[ListNode], nums: List[int]) -> int:
+        s = set(nums)
+        connected = False
+        count = 0
+        while head:
+            if head.val in s and not connected:
+                count += 1
+                connected = True
+            elif not head.val in s and connected:
+                connected = False
+            head = head.next
+        return count
+```
+
+### 29 925. Long Pressed Name
+
+```python
+class Solution:
+    def isLongPressedName(self, name: str, typed: str) -> bool:
+        def getFrequencyArray(name):
+            arr = []
+            i = 0
+            count = 1
+            while i + 1 < len(name):
+                if name[i] == name[i + 1]:
+                    count += 1
+                else:
+                    arr.append([name[i], count])
+                    count = 1
+                i += 1
+            if arr and name[-1] == arr[-1][0]:
+                arr[-1][1] += 1
+            else:
+                arr.append([name[-1], 1])
+            return arr
+
+        nameArr = getFrequencyArray(name)
+        typedArr = getFrequencyArray(typed)
+        if (len(nameArr) != len(typedArr)):
+            return False
+        for i in range(len(nameArr)):
+            if nameArr[i][0] != typedArr[i][0] or nameArr[i][1] > typedArr[i][1]:
+                return False
+        return True
+```
+
+### 30 859. Buddy Strings
+
+```python
+class Solution:
+    def buddyStrings(self, s: str, goal: str) -> bool:
+        # if lengths are different, then must be false
+        if len(s) != len(goal):
+            return False
+        # If s and goal are same, then A must have duplicate character
+        if s == goal:
+            seen = set()
+            for a in s:
+                if a in seen:
+                    return True
+                seen.add(a)
+            return False
+
+        pair = []
+        # when s and goal are not same
+        for a, b in zip(s, goal):
+            if a != b:
+                pair.append((a, b))
+            if len(pair) > 2:
+                return False
+
+        return len(pair) == 2 and pair[0] == pair[1][::-1]
+```
+
+dfs
+
+1 200. Number of Islands
+
+```python
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        def dfs(grid, r, c):
+            grid[r][c] = '0'
+            points = [[r - 1, c], [r + 1, c], [r, c + 1], [r, c - 1]]
+            for row, col in points:
+                if row >= 0 and col >= 0 and row < len(grid) and col < len(grid[0]) and grid[row][col] == '1':
+                    dfs(grid, row, col)
+
+        count = 0
+        ROWS, COLS = len(grid), len(grid[0])
+        for i in range(ROWS):
+            for j in range(COLS):
+                if grid[i][j] == '1':
+                    dfs(grid, i, j)
+                    count += 1
+        return count
+```
+
+2 94. Binary Tree Inorder Traversal
+
+```python
+# recursive
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        def dfs(node, arr):
+            if not node:
+                return node
+            dfs(node.left, arr)
+            arr.append(node.val)
+            dfs(node.right, arr)
+            return arr
+        return dfs(root, [])
+# iterative
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res, stack = [], []
+        while True:
+            while root:
+                stack.append(root)
+                root = root.left
+            if not stack:
+                return res
+            node = stack.pop()
+            res.append(node.val)
+            root = node.right
+```
+
+3 144. Binary Tree Preorder Traversal
+
+```python
+# recursive
+class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        def dfs(node, arr):
+            if not node:
+                return node
+            arr.append(node.val)
+            dfs(node.left, arr)
+            dfs(node.right, arr)
+            return arr
+        return dfs(root, [])
+# iterative
+class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res, stack = [], [root]
+        while stack:
+            node = stack.pop()
+            if node:
+                res.append(node.val)
+                stack.extend([node.right, node.left])
+        return res
+```
+
+4 145. Binary Tree Postorder Traversal
+
+```python
+# recursive
+class Solution:
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        def dfs(node, arr):
+            if not node:
+                return node
+            dfs(node.left, arr)
+            dfs(node.right, arr)
+            arr.append(node.val)
+            return arr
+        return dfs(root, [])
+# iterative
+class Solution:
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        # modified preorder
+        res, stack = [], [root]
+        while stack:
+            node = stack.pop()
+            if node:
+                res.append(node.val)
+                stack.extend([node.left, node.right])
+        return res[::-1]
+```
+
+### 11
+
+300. Longest Increasing Subsequence
+
+```python
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        res = []
+        for n in nums:
+            if not res or n > res[-1]:
+                res.append(n)
+            else:
+                l, r = 0, len(res) - 1
+                while l < r:
+                    m = (l + r) // 2
+                    if res[m] < n:
+                        l += 1
+                    else:
+                        r = m
+                res[l] = n
+        return len(res)
+```
+
+### 12
+
+354. Russian Doll Envelopes
+
+```python
+class Solution:
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        envelopes.sort(key = lambda x: (x[0], -x[1]))
+        nums = []
+        for item in envelopes:
+            nums.append(item[1])
+
+        # LIS
+        res = []
+        for n in nums:
+            if not res or n > res[-1]:
+                res.append(n)
+            else:
+                l, r = 0, len(res) - 1
+                while l < r:
+                    m = (l + r) // 2
+                    if res[m] < n:
+                        l += 1
+                    else:
+                        r = m
+                res[l] = n
+        return len(res)
+```
+
+### 19
+
+1094. Car Pooling
+      method 1
+
+```python
+class Solution:
+    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
+        trips.sort(key = lambda x : x[1])
+        minHeap = [] # python used min heap and used index 0 for heap calculation
+        curr = 0
+        for t in trips:
+            num, start, end = t
+            while minHeap and minHeap[0][0] <= start:
+                curr -= minHeap[0][1]
+                heapq.heappop(minHeap)
+            curr += num
+            if curr > capacity:
+                return False
+            heapq.heappush(minHeap, [end, num])
+        return True
+```
+
+method 2
+
+```python
+class Solution:
+    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
+        change = [0 for i in range(1001)]
+        for t in trips:
+            num, start, end = t
+            change[start] += num
+            change[end] -= num
+        curr = 0
+        for i in range(1001):
+            curr += change[i]
+            if curr > capacity:
+                return False
+        return True
+```
+
+### 20
+
+1638. Count Substrings That Differ by One Character
+
+```python
+class Solution:
+    def countSubstrings(self, s: str, t: str) -> int:
+        # count all numbers
+        res = 0
+        # brute force check all conditions
+        for i in range(len(s)):
+            for j in range(len(t)):
+                x, y = i, j
+                # check when to count res and when to stop
+                count = 0
+                while x < len(s) and y < len(t):
+                    if s[x] != t[y]:
+                        count += 1
+                    if count == 1:
+                        res += 1
+                    if count == 2:
+                        break
+                    x += 1
+                    y += 1
+        return res
+```
+
+### 21
+
+299. Bulls and Cows
+
+```python
+class Solution:
+    def getHint(self, secret: str, guess: str) -> str:
+        bulls = 0
+        bucket = [0 for i in range(10)]
+        for s, g in zip(secret, guess):
+            if s == g:
+                bulls += 1
+            else:
+                bucket[int(s)] += 1
+                bucket[int(g)] -= 1
+        return f'{bulls}A{len(secret) - bulls - sum(x for x in bucket if x > 0)}B'
+```
+
+### 23
+
+475. Heaters
+
+```python
+class Solution:
+    def findRadius(self, houses: List[int], heaters: List[int]) -> int:
+        def closest(heaters, house):
+            l, r = 0, len(heaters) - 1
+            min_dist = float('inf')
+            while l <= r:
+                m = (l + r) // 2
+                min_dist = min(min_dist, abs(heaters[m] - house))
+                if heaters[m] < house:
+                    l = m + 1
+                else:
+                    r = m - 1
+            return min_dist
+
+        radius = 0
+        heaters.sort()
+        for house in houses:
+            radius = max(radius, closest(heaters, house))
+        return radius
+```
+
+### 24
+
+403. Frog Jump
+
+```python
+class Solution:
+    def canCross(self, stones: List[int]) -> bool:
+        n = len(stones)
+        stoneSet = set(stones)
+        visited = set()
+        def goFurther(value, units):
+            if (value + units not in stoneSet) or ((value,units) in visited):
+                return False
+            if value + units == stones[n-1]:
+                return True
+            visited.add((value,units))
+            return goFurther(value + units,units) or goFurther(value + units,units - 1) or goFurther(value + units,units + 1)
+        return goFurther(stones[0], 1)
+```
+
+### 25
+
+658. Find K Closest Elements
+
+```python
+class Solution:
+    def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
+        n = len(arr)
+        start = 0
+        end = n - k
+        while start < end:
+            mid = (start + end) // 2
+            if x - arr[mid] > arr[mid + k] - x:  # move right
+                start = mid + 1
+            else:
+                end = mid
+        return arr[start: start + k]
+```
+
+### 26 382. Linked List Random Node
+
+https://leetcode.com/problems/linked-list-random-node/discuss/1672358/C%2B%2BPythonJava-Reservoir-sampling-oror-Prove-step-by-step-oror-Image
+
+```python
+class Solution:
+
+    def __init__(self, head: Optional[ListNode]):
+        self.nodes = []
+        while head:
+            self.nodes.append(head.val)
+            head = head.next
+    def getRandom(self) -> int:
+        return random.choice(self.nodes)
+```
+
+### 27 817. Linked List Components
+
+```python
+class Solution:
+    def numComponents(self, head: Optional[ListNode], nums: List[int]) -> int:
+        s = set(nums)
+        connected = False
+        count = 0
+        while head:
+            if head.val in s and not connected:
+                count += 1
+                connected = True
+            elif not head.val in s and connected:
+                connected = False
+            head = head.next
+        return count
+```
+
+### 29 925. Long Pressed Name
+
+```python
+class Solution:
+    def isLongPressedName(self, name: str, typed: str) -> bool:
+        def getFrequencyArray(name):
+            arr = []
+            i = 0
+            count = 1
+            while i + 1 < len(name):
+                if name[i] == name[i + 1]:
+                    count += 1
+                else:
+                    arr.append([name[i], count])
+                    count = 1
+                i += 1
+            if arr and name[-1] == arr[-1][0]:
+                arr[-1][1] += 1
+            else:
+                arr.append([name[-1], 1])
+            return arr
+
+        nameArr = getFrequencyArray(name)
+        typedArr = getFrequencyArray(typed)
+        if (len(nameArr) != len(typedArr)):
+            return False
+        for i in range(len(nameArr)):
+            if nameArr[i][0] != typedArr[i][0] or nameArr[i][1] > typedArr[i][1]:
+                return False
+        return True
+```
+
+### 30 859. Buddy Strings
+
+```python
+class Solution:
+    def buddyStrings(self, s: str, goal: str) -> bool:
+        # if lengths are different, then must be false
+        if len(s) != len(goal):
+            return False
+        # If s and goal are same, then A must have duplicate character
+        if s == goal:
+            seen = set()
+            for a in s:
+                if a in seen:
+                    return True
+                seen.add(a)
+            return False
+
+        pair = []
+        # when s and goal are not same
+        for a, b in zip(s, goal):
+            if a != b:
+                pair.append((a, b))
+            if len(pair) > 2:
+                return False
+
+        return len(pair) == 2 and pair[0] == pair[1][::-1]
+```
+
+dfs
+
+### 1 monotonic stack
+
+739. Daily Temperatures
+
+```python
+class Solution:
+    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+        res, stack = [0] * len(temperatures), []
+        for i in range(len(temperatures)):
+            while stack and temperatures[stack[-1]] < temperatures[i]:
+                last = stack.pop()
+                res[last] = i - last
+            stack.append(i)
+        return res
+```
+
+962. Maximum Width Ramp
+
+```python
+class Solution:
+    def maxWidthRamp(self, nums: List[int]) -> int:
+        res, stack, n = 0, [], len(nums)
+        for i in range(n):
+            if not stack or nums[stack[-1]] > nums[i]:
+                stack.append(i)
+        for i in range(n - 1, -1, -1):
+            while stack and nums[i] >= nums[stack[-1]]:
+                last = stack.pop()
+                res = max(res, i - last)
+        return res
+```
+
+84. Largest Rectangle in Histogram
+
+```python
+class Solution:
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        # non-decreasing stack, res is max area
+        res, stack = 0, []
+        for i, h in enumerate(heights):
+            start = i
+            while stack and stack[-1][1] > h:
+                index, height = stack.pop()
+                res = max(res, height * (i - index))
+                start = index
+            stack.append((start, h))
+        # handle remaining stack:
+        for i, h in stack:
+            res = max(res, h * (len(heights) - i))
+        return res
+```
+
+85. Maximal Rectangle
+
+```python
+class Solution:
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+        def histHelper(heights):
+            res, stack = 0, []
+            for i, h in enumerate(heights):
+                start = i
+                while stack and stack[-1][1] > h:
+                    index, height = stack.pop()
+                    res = max(res, height * (i - index))
+                    start = index
+                stack.append((start, h))
+            # handle remaining stack:
+            for i, h in stack:
+                res = max(res, h * (len(heights) - i))
+            return res
+        # calculate each row
+        res = 0
+        heights = [0] * len(matrix[0])
+        for row in matrix:
+            for i in range(len(heights)):
+                heights[i] = heights[i] + 1 if row[i] == '1' else 0
+            res = max(res, histHelper(heights))
+        return res
+```
+
+767. Reorganize String
+
+```python
+class Solution:
+    def reorganizeString(self, s: str) -> str:
+        count = Counter(s)
+        maxHeap = [[-cnt, char] for char, cnt in count.items()]
+        heapq.heapify(maxHeap)
+
+        res, prev = '', None
+        while maxHeap:
+            cnt, char = heapq.heappop(maxHeap)
+            res += char
+            cnt += 1
+            if prev:
+                heapq.heappush(maxHeap, prev)
+                prev = None
+            if cnt != 0:
+                prev = [cnt, char]
+        return '' if prev else res
 ```
